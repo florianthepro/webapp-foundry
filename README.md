@@ -7,8 +7,6 @@ Kurzname:      WAF
 Repositorytyp: Versioniertes Web-App-Repository
 ```
 
-**WebApp Foundry** stellt Web-Apps in vollständig getrennten Versionen bereit. `catalog.json` listet alle Apps, während die jeweilige `app.json` alle verfügbaren Versionen einer App beschreibt.
-
 ## Zielstruktur
 
 ```text
