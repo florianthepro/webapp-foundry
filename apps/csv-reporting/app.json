@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "appId": "csv-reporting",
+  "name": "CSV Reporting",
+  "summary": "CSV-Auswertung mit Regeln, Filtern, Karten-, Rohdaten- und Editoransicht.",
+  "latest": "1.0.0",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "path": "versions/1.0.0",
+      "status": "stable"
+    }
+  ]
+}
