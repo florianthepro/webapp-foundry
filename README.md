@@ -15,8 +15,6 @@ Kompatibilität: Eigenständig nutzbar, optional WAMS-kompatibel
 
 ## 1. Zweck
 
-WebApp Foundry trennt Webanwendungen vom Management-System und von produktiven Instanzdaten.
-
 Das Repository enthält:
 
 - Web-App-Quellcode;
@@ -29,23 +27,6 @@ Das Repository enthält:
 - Prüfsummen;
 - Kataloginformationen.
 
-Das Repository enthält nicht:
-
-- den WAMS-Manager;
-- Benutzer, Gruppen oder Rechte;
-- konkrete Tenant-Daten;
-- produktive App-Konfigurationen;
-- produktive App-Daten;
-- Passwörter, Tokens oder private Schlüssel;
-- Sessions, Logs oder Cache-Dateien;
-- serverabhängige Installationspfade.
-
----
-
-## 2. Eigenständigkeit und optionale WAMS-Kompatibilität
-
-WebApp Foundry ist nicht Teil von WAMS und soll unabhängig davon verständlich und pflegbar bleiben.
-
 Eine Foundry-App kann:
 
 1. eigenständig entwickelt und getestet werden;
@@ -53,29 +34,11 @@ Eine Foundry-App kann:
 3. über ein Releasepaket verteilt werden;
 4. optional von WAMS installiert und verwaltet werden.
 
-WAMS-Kompatibilität wird ausschließlich über standardisierte Manifestfelder und den optionalen Laufzeitkontext hergestellt. Der eigentliche App-Code bleibt ein Web-App-Projekt und kein fest eingebautes WAMS-Modul.
-
 ---
 
 ## 3. Branding
 
 ### Name
-
-```text
-WebApp Foundry
-```
-
-### Repositoryname
-
-```text
-webapp-foundry
-```
-
-### Kurzname
-
-```text
-WAF
-```
 
 ### Beschreibung für GitHub
 
