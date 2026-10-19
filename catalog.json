@@ -1,13 +1,9 @@
 {
-  "schemaVersion": 1,
-  "catalog": {
-    "id": "webapp-foundry-main",
-    "name": "WebApp Foundry"
-  },
   "apps": [
     {
-      "appId": "csv-reporting",
-      "app": "apps/csv-reporting/app.json"
+      "id": "csv-reporting",
+      "name": "CSV Reporting",
+      "directory": "apps/csv-reporting"
     }
   ]
 }
