@@ -7,12 +7,12 @@ Projektname:   WebApp Foundry
 Repository:    webapp-foundry
 Kurzname:      WAF
 Repositorytyp: Versioniertes Web-App-Repository
-Schwerpunkt:   Logisch getrennte App-Dateien, AppConfig und AppData
+Schwerpunkt:   Logisch getrennte App-Dateien, Assets, AppConfig und AppData
 ```
 
 <br>
 
-> **WebApp Foundry** stellt Web-Apps in klar getrennten und unveränderlichen Versionen bereit. `catalog.json` listet alle Apps. Jede App besitzt genau eine Datei `app.json`. Diese Datei beschreibt die App und listet alle verfügbaren Versionen. Der vollständige Inhalt jeder Version liegt ausschließlich im zugehörigen Versionsordner.
+> **WebApp Foundry** stellt Web-Apps in klar getrennten, vollständigen und unveränderlichen Versionen bereit. `catalog.json` listet alle Apps. Jede App besitzt genau eine `app.json`, welche die App beschreibt und sämtliche veröffentlichten Versionen auflistet. Der komplette Stand einer Version liegt ausschließlich im zugehörigen Versionsordner.
 
 <br>
 
@@ -20,42 +20,7 @@ Schwerpunkt:   Logisch getrennte App-Dateien, AppConfig und AppData
 
 <br>
 
-## 1. Grundprinzip
-
-<br>
-
-Das Repository trennt vier Bereiche:
-
-<br>
-
-```text
-App-Katalog        catalog.json
-App-Beschreibung   apps/<app-id>/app.json
-App-Version        apps/<app-id>/versions/<version>/
-Laufzeitinstanz    außerhalb dieses Repositorys
-```
-
-<br>
-
-Für jede App gilt:
-
-<br>
-
-- im App-Ordner befindet sich als einzige Datei `app.json`;
-- zusätzlich enthält der App-Ordner ausschließlich das Verzeichnis `versions/`;
-- `app.json` beschreibt die App und listet ihre Versionen;
-- jede Version enthält den vollständigen, eigenständig nutzbaren Versionsstand;
-- App-Code, Nutzdaten, AppConfig-Daten und AppData-Vorlagen sind innerhalb jeder Version getrennt;
-- produktive Instanzdaten und produktive Geheimnisse werden nicht in diesem Repository gespeichert;
-- veröffentlichte Versionsordner werden nicht nachträglich verändert.
-
-<br>
-
----
-
-<br>
-
-## 2. Repository-Struktur
+## 1. Zielbild
 
 <br>
 
@@ -76,37 +41,60 @@ webapp-foundry/
     │       │   │   ├── icon.svg
     │       │   │   └── resources/
     │       │   ├── config/
-    │       │   │   ├── defaults.json
-    │       │   │   ├── schema.json
-    │       │   │   └── README.md
-    │       │   ├── data/
-    │       │   │   ├── defaults/
-    │       │   │   ├── schema.json
-    │       │   │   └── README.md
-    │       │   ├── README.md
-    │       │   └── LICENSE
+    │       │   │   └── hello-world-config.json
+    │       │   └── data/
+    │       │       └── .../
     │       └── 1.1.0/
-    │           ├── .../
+    │           ├── app/
+    │           ├── assets/
+    │           ├── config/
+    │           │   └── hello-world-config.json
+    │           └── data/
     └── weitere-app/
         ├── app.json
         └── versions/
             └── 1.0.0/
+                ├── app/
+                ├── assets/
+                ├── config/
+                │   └── weitere-app-config.json
+                └── data/
 ```
 
 <br>
 
-Im App-Ordner sind damit nur diese beiden Einträge erlaubt:
+---
+
+<br>
+
+## 2. Grundprinzip
+
+<br>
+
+Das Repository trennt vier Bereiche:
 
 <br>
 
 ```text
-apps/<app-id>/app.json
-apps/<app-id>/versions/
+App-Katalog        catalog.json
+App-Beschreibung   apps/<app-id>/app.json
+App-Version        apps/<app-id>/versions/<version>/
+Produktive Instanz außerhalb dieses Repositorys
 ```
 
 <br>
 
-Icons, READMEs, Lizenzen, Konfigurationsvorlagen, Datenvorlagen und sonstige App-Dateien liegen immer innerhalb des jeweiligen Versionsordners.
+Für jede App gilt:
+
+<br>
+
+- direkt im App-Ordner befindet sich als einzige Datei `app.json`;
+- neben `app.json` existiert ausschließlich das Verzeichnis `versions/`;
+- `app.json` beschreibt die App und listet alle veröffentlichten Versionen;
+- jede Version enthält einen vollständigen und unabhängig nutzbaren App-Stand;
+- App-Code, Assets, AppConfig-Vorlage und AppData-Ausgangsstruktur sind klar getrennt;
+- produktive Instanzkonfigurationen und produktive AppData liegen außerhalb dieses Repositorys;
+- veröffentlichte Versionsordner werden nicht nachträglich verändert.
 
 <br>
 
@@ -118,7 +106,7 @@ Icons, READMEs, Lizenzen, Konfigurationsvorlagen, Datenvorlagen und sonstige App
 
 <br>
 
-`catalog.json` ist der zentrale Einstiegspunkt und listet alle Apps über den Pfad zu deren `app.json`.
+`catalog.json` ist der zentrale Einstiegspunkt. Die Datei listet alle Apps und verweist auf deren `app.json`.
 
 <br>
 
@@ -128,7 +116,7 @@ Icons, READMEs, Lizenzen, Konfigurationsvorlagen, Datenvorlagen und sonstige App
   "catalog": {
     "id": "webapp-foundry-main",
     "name": "WebApp Foundry",
-    "updatedAt": "2026-10-19T06:00:00Z"
+    "updatedAt": "2026-10-19T08:53:00Z"
   },
   "apps": [
     {
@@ -164,12 +152,12 @@ Regeln:
 
 <br>
 
-- jede `appId` ist eindeutig;
-- der angegebene Pfad verweist auf eine vorhandene `app.json`;
-- die `appId` in `catalog.json` entspricht der `appId` in `app.json`;
-- Pfade sind relativ zum Repository-Stamm;
-- `..` und absolute Pfade sind nicht erlaubt;
-- `catalog.json` enthält keine Versionsdetails; Versionen werden ausschließlich in der jeweiligen `app.json` geführt.
+- jede `appId` ist im Katalog eindeutig;
+- jeder Pfad verweist auf eine vorhandene `app.json`;
+- die `appId` im Katalog entspricht der `appId` in der referenzierten `app.json`;
+- alle Pfade sind relativ zum Repository-Stamm;
+- absolute Pfade und Pfadsegmente wie `..` sind verboten;
+- Versionsdetails stehen nicht in `catalog.json`, sondern ausschließlich in der jeweiligen `app.json`.
 
 <br>
 
@@ -191,7 +179,7 @@ apps/<app-id>/
 
 <br>
 
-Erlaubte Zeichen:
+Die App-ID darf ausschließlich enthalten:
 
 <br>
 
@@ -228,7 +216,7 @@ hello world
 
 <br>
 
-Die App-ID bleibt über alle Versionen unverändert.
+Die App-ID bleibt über sämtliche Versionen unverändert.
 
 <br>
 
@@ -247,10 +235,11 @@ Die App-ID bleibt über alle Versionen unverändert.
 - App-ID;
 - Anzeigename;
 - Kurzbeschreibung;
-- aktuelle Version;
+- aktuelle stabile Version;
 - Liste aller veröffentlichten Versionen;
-- Status der Versionen;
-- relative Pfade zu den Versionsordnern.
+- Status jeder Version;
+- Veröffentlichungszeitpunkt;
+- relativen Pfad zum Versionsordner.
 
 <br>
 
@@ -276,7 +265,7 @@ Beispiel:
       "version": "1.1.0",
       "path": "versions/1.1.0",
       "status": "stable",
-      "releasedAt": "2026-10-19T06:00:00Z"
+      "releasedAt": "2026-10-19T08:53:00Z"
     }
   ]
 }
@@ -318,12 +307,13 @@ Regeln:
 
 <br>
 
-- `latest` verweist auf eine vorhandene Version in `versions`;
+- `latest` verweist auf eine vorhandene Version mit Status `stable`;
 - jede Versionsnummer ist innerhalb der App eindeutig;
 - jeder Versionspfad liegt unter `versions/`;
-- der Versionsordner muss vorhanden sein;
-- stabile Versionen werden nicht nachträglich verändert;
-- veraltete Versionen werden als `deprecated` markiert, aber nicht entfernt, solange sie noch für Rollbacks erforderlich sind.
+- jeder gelistete Versionsordner muss vorhanden sein;
+- stabile Versionen werden nach Veröffentlichung nicht verändert;
+- veraltete Versionen können als `deprecated` markiert werden;
+- Versionen bleiben für Rollbacks und Nachvollziehbarkeit erhalten.
 
 <br>
 
@@ -385,56 +375,34 @@ apps/hello-world/versions/1.1.0/
 
 <br>
 
-Jeder Versionsordner enthält den vollständigen Stand der jeweiligen App-Version.
+Jeder Versionsordner enthält den vollständigen Stand dieser App-Version.
 
 <br>
 
 ```text
 versions/<version>/
 ├── app/
-├── app-assets/
-├── app-config/
-├── app-data/
-├── migrations/
-├── health/
-├── README.md
-└── LICENSE
+├── assets/
+├── config/
+└── data/
 ```
 
 <br>
 
-Pflichtverzeichnisse:
+Alle vier Verzeichnisse sind verbindlich:
 
 <br>
 
 ```text
-app/
-app-assets/
-app-config/
-app-data/
+app/       ausführbarer App-Code
+assets/    unveränderliche Assets und Ressourcen
+config/    versionsbezogene AppConfig-Vorlage
+data/      versionsbezogene AppData-Ausgangsstruktur
 ```
 
 <br>
 
-Optionale Verzeichnisse:
-
-<br>
-
-```text
-migrations/
-health/
-```
-
-<br>
-
-Pflichtdateien:
-
-<br>
-
-```text
-README.md
-LICENSE
-```
+Eine App-Version darf keine Dateien aus einem anderen Versionsordner benötigen.
 
 <br>
 
@@ -446,7 +414,7 @@ LICENSE
 
 <br>
 
-`app/` enthält ausschließlich den ausführbaren, versionsgebundenen App-Code.
+`app/` enthält den vollständigen ausführbaren Quellcode der betreffenden Version.
 
 <br>
 
@@ -457,22 +425,26 @@ Beispiel:
 ```text
 app/
 ├── index.php
-├── src/
-├── templates/
-└── public/
-    └── assets/
-        ├── app.css
-        └── app.js
+└── src/
+    ├── Application.php
+    ├── Router.php
+    └── Storage.php
 ```
 
 <br>
 
-Der Einstiegspunkt wird in der versionsbezogenen `README.md` dokumentiert:
+Bei Bedarf sind weitere logische Unterverzeichnisse möglich:
 
 <br>
 
 ```text
-Einstiegspunkt: app/index.php
+app/
+├── index.php
+├── src/
+├── pages/
+├── templates/
+├── includes/
+└── public/
 ```
 
 <br>
@@ -482,10 +454,12 @@ Regeln:
 <br>
 
 - der App-Code ist vollständig;
-- es gibt keine Abhängigkeit zu Dateien aus einer anderen App-Version;
-- es gibt keine produktiven AppData in `app/`;
-- es gibt keine produktiven AppConfig-Dateien in `app/`;
-- der Versionsordner kann separat geprüft und bereitgestellt werden.
+- der Einstiegspunkt liegt innerhalb von `app/`;
+- der Standard-Einstiegspunkt ist `app/index.php`;
+- ein abweichender Einstiegspunkt wird innerhalb des App-Codes nachvollziehbar dokumentiert;
+- produktive AppConfig gehört nicht nach `app/`;
+- produktive AppData gehört nicht nach `app/`;
+- Cache-, Session- und Logdateien gehören nicht nach `app/`.
 
 <br>
 
@@ -493,11 +467,130 @@ Regeln:
 
 <br>
 
-## 9. `app-assets/` – Nutzdaten und statische Ressourcen
+## 9. `assets/` – unveränderliche Ressourcen
 
 <br>
 
-`app-assets/` enthält nicht veränderliche Nutzdaten und Ressourcen, die zur jeweiligen App-Version gehören.
+`assets/` enthält alle unveränderlichen Ressourcen, die zur betreffenden App-Version gehören.
+
+<br>
+
+Beispiel:
+
+<br>
+
+```text
+assets/
+├── icon.svg
+└── resources/
+    ├── css/
+    ├── js/
+    ├── images/
+    ├── fonts/
+    ├── languages/
+    ├── templates/
+    └── sample-files/
+```
+
+<br>
+
+Geeignete Inhalte:
+
+<br>
+
+- App-Icon;
+- Stylesheets;
+- JavaScript-Dateien;
+- Bilder;
+- Schriften;
+- Sprachdateien;
+- statische Vorlagen;
+- Beispieldateien;
+- mitgelieferte Dokumente;
+- unveränderliche Referenzdaten.
+
+<br>
+
+Nicht nach `assets/` gehören:
+
+<br>
+
+- produktive Benutzerdaten;
+- veränderliche Laufzeitdaten;
+- produktive Konfiguration;
+- Zugangsschlüssel;
+- Logs;
+- Sessions;
+- Cache-Dateien.
+
+<br>
+
+### Icon
+
+<br>
+
+Das App-Icon liegt unter:
+
+<br>
+
+```text
+assets/icon.svg
+```
+
+<br>
+
+Alternativ sind möglich:
+
+<br>
+
+```text
+assets/icon.png
+assets/icon.webp
+```
+
+<br>
+
+Empfohlen:
+
+<br>
+
+- quadratisches Format;
+- SVG bevorzugt;
+- mindestens 128 × 128 Pixel bei Rastergrafiken;
+- keine externen Hotlinks;
+- kein ausführbares JavaScript in SVG-Dateien.
+
+<br>
+
+---
+
+<br>
+
+## 10. `config/` – AppConfig-Vorlage
+
+<br>
+
+`config/` enthält genau eine versionsbezogene Konfigurationsvorlage.
+
+<br>
+
+Das feste Namensschema lautet:
+
+<br>
+
+```text
+<app-id>-config.json
+```
+
+<br>
+
+Der vollständige Pfad lautet:
+
+<br>
+
+```text
+apps/<app-id>/versions/<version>/config/<app-id>-config.json
+```
 
 <br>
 
@@ -506,71 +599,18 @@ Beispiele:
 <br>
 
 ```text
-app-assets/
-├── icon.svg
-├── screenshots/
-├── templates/
-├── dictionaries/
-├── sample-files/
-└── resources/
+apps/hello-world/versions/1.0.0/config/hello-world-config.json
+apps/status-page/versions/2.1.0/config/status-page-config.json
+apps/network-tools/versions/1.4.2/config/network-tools-config.json
 ```
 
 <br>
 
-Typische Inhalte:
+Die Datei enthält sichere Standardwerte für eine neu angelegte Instanz.
 
 <br>
 
-- App-Icon;
-- Bilder;
-- mitgelieferte Vorlagen;
-- statische Referenzdaten;
-- Sprachdateien;
-- Beispieldateien;
-- mitgelieferte Dokumente;
-- andere unveränderliche Nutzdaten.
-
-<br>
-
-Nicht hierher gehören:
-
-<br>
-
-- produktive Benutzerdaten;
-- veränderliche Laufzeitdaten;
-- produktive Konfiguration;
-- Zugangsschlüssel;
-- Cache-Dateien;
-- Logs.
-
-<br>
-
----
-
-<br>
-
-## 10. `app-config/` – AppConfig-Struktur
-
-<br>
-
-`app-config/` enthält ausschließlich die Konfigurationsstruktur und die Standardkonfiguration der Version.
-
-<br>
-
-```text
-app-config/
-├── defaults.json
-├── schema.json
-└── README.md
-```
-
-<br>
-
-### `defaults.json`
-
-<br>
-
-Enthält sichere Standardwerte:
+Beispiel:
 
 <br>
 
@@ -583,57 +623,46 @@ Enthält sichere Standardwerte:
 
 <br>
 
-### `schema.json`
+Regeln:
 
 <br>
 
-Beschreibt die erlaubte Konfiguration:
+- der Dateiname entspricht immer der App-ID;
+- pro Version existiert genau eine AppConfig-Vorlage;
+- die Datei muss gültiges JSON enthalten;
+- die Vorlage darf keine Passwörter, Tokens oder privaten Schlüssel enthalten;
+- die Vorlage wird beim Erstellen einer neuen Instanz kopiert;
+- die Vorlage ist nicht die produktive Konfiguration einer Instanz;
+- ein Update darf eine vorhandene produktive AppConfig nicht ungefragt ersetzen.
 
 <br>
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "required": [
-    "title"
-  ],
-  "properties": {
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 120
-    },
-    "refreshSeconds": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 86400
-    }
-  },
-  "additionalProperties": false
-}
+### Produktive AppConfig
+
+<br>
+
+Die produktive Konfiguration einer installierten Instanz liegt außerhalb dieses Repositorys.
+
+<br>
+
+Empfohlene Laufzeitstruktur:
+
+<br>
+
+```text
+instances/<instance-id>/config/<app-id>-config.json
 ```
 
 <br>
 
-### `README.md`
+Beim Update gilt:
 
 <br>
 
-Dokumentiert:
-
-<br>
-
-- alle Konfigurationsfelder;
-- Standardwerte;
-- Pflichtfelder;
-- erlaubte Werte;
-- Änderungen gegenüber der vorherigen Version;
-- geheime Werte, die extern eingetragen werden müssen.
-
-<br>
-
-Produktive Konfigurationswerte gehören nicht in dieses Repository.
+- vorhandene Benutzerwerte bleiben erhalten;
+- neue Standardfelder können kontrolliert ergänzt werden;
+- entfernte oder umbenannte Felder benötigen eine app-spezifische Migration;
+- vor Änderungen wird die produktive Konfiguration gesichert.
 
 <br>
 
@@ -641,70 +670,100 @@ Produktive Konfigurationswerte gehören nicht in dieses Repository.
 
 <br>
 
-## 11. `app-data/` – AppData-Struktur und Startdaten
+## 11. `data/` – AppData-Ausgangsstruktur
 
 <br>
 
-`app-data/` enthält die Struktur, Vorlagen und optionalen Startdaten für veränderliche AppData.
+`data/` enthält die vollständige initiale Datenstruktur einer neuen App-Instanz.
 
 <br>
 
-```text
-app-data/
-├── defaults/
-├── schema.json
-└── README.md
-```
-
-<br>
-
-### `defaults/`
-
-<br>
-
-Kann initiale, nicht geheime Startdaten enthalten:
+Beispiel:
 
 <br>
 
 ```text
-app-data/defaults/
-├── database.json
+data/
 ├── rules.json
+├── database.json
+├── uploads/
+│   └── .gitkeep
 └── folders/
+    └── .gitkeep
 ```
 
 <br>
 
-Diese Daten werden bei einer neuen Instanz initial kopiert. Ein Update darf bestehende AppData nicht mit diesen Standarddaten überschreiben.
+Oder bei einer App ohne initiale Daten:
 
 <br>
 
-### `schema.json`
+```text
+data/
+└── .gitkeep
+```
 
 <br>
 
-Beschreibt optional die erwartete AppData-Struktur oder deren Versionsstand.
+Geeignete Inhalte:
 
 <br>
 
-### `README.md`
+- leere Ausgangsdateien;
+- Standardregeln;
+- initiale JSON-Strukturen;
+- Datenbankvorlagen;
+- erforderliche leere Ordner;
+- technische Startdaten;
+- nicht produktive Beispieldaten, wenn sie für den Start erforderlich sind.
 
 <br>
 
-Dokumentiert:
+Nicht nach `data/` gehören:
 
 <br>
 
-- erzeugte Dateien und Ordner;
-- Datenformat;
-- Schreibrechte;
-- Backup-Anforderungen;
-- Migrationsanforderungen;
-- Daten, die bei einem Update erhalten bleiben müssen.
+- produktive Benutzerdaten;
+- echte Uploads;
+- reale Kunden- oder Personendaten;
+- Passwörter oder Tokens;
+- Logs;
+- Sessions;
+- Cache-Dateien.
 
 <br>
 
-Produktive AppData gehört nicht in dieses Repository.
+### Installation
+
+<br>
+
+Beim Erstellen einer neuen Instanz wird der Inhalt von `data/` in den getrennten Laufzeitbereich der Instanz kopiert.
+
+<br>
+
+Empfohlene Laufzeitstruktur:
+
+<br>
+
+```text
+instances/<instance-id>/data/
+```
+
+<br>
+
+### Update
+
+<br>
+
+Bei einem Update gilt:
+
+<br>
+
+- vorhandene produktive AppData bleiben erhalten;
+- der Inhalt des neuen `data/`-Ordners überschreibt keine vorhandenen produktiven Dateien;
+- neue verpflichtende Dateien oder Ordner werden kontrolliert ergänzt;
+- strukturelle Änderungen benötigen eine app-spezifische Migration;
+- vor einer Migration werden die produktiven AppData gesichert.
 
 <br>
 
@@ -717,10 +776,10 @@ Produktive AppData gehört nicht in dieses Repository.
 <br>
 
 ```text
-app/          ausführbarer Quellcode
-app-assets/   unveränderliche Nutzdaten und Ressourcen
-app-config/   Konfigurationsschema und Standardkonfiguration
-app-data/     AppData-Struktur und initiale Startdaten
+app/       ausführbarer Quellcode
+assets/    unveränderliche Ressourcen der Version
+config/    AppConfig-Vorlage der Version
+data/      AppData-Ausgangsstruktur der Version
 ```
 
 <br>
@@ -730,13 +789,15 @@ Beispiele:
 <br>
 
 ```text
-Logo der App                         app-assets/
-CSS und JavaScript des Programms     app/
-Standard-Seitentitel                 app-config/defaults.json
-Konfigurationsfeld-Beschreibung      app-config/schema.json
-leere Regeln als Ausgangszustand     app-data/defaults/rules.json
-produktive Regeln eines Nutzers      nicht in diesem Repository
-hochgeladene Dokumente               nicht in diesem Repository
+PHP-Anwendung                         app/
+Klassen und Funktionen                app/src/
+CSS und JavaScript                    assets/resources/
+App-Icon                              assets/icon.svg
+Standard-Seitentitel                  config/<app-id>-config.json
+leere Regeldatei                      data/rules.json
+erforderlicher Upload-Ordner          data/uploads/.gitkeep
+produktive Benutzerregeln             nicht in diesem Repository
+produktive Uploads                    nicht in diesem Repository
 ```
 
 <br>
@@ -745,154 +806,7 @@ hochgeladene Dokumente               nicht in diesem Repository
 
 <br>
 
-## 13. Versionsbezogene README
-
-<br>
-
-Jede Version benötigt:
-
-<br>
-
-```text
-apps/<app-id>/versions/<version>/README.md
-```
-
-<br>
-
-Die README enthält mindestens:
-
-<br>
-
-```text
-App-Name
-App-ID
-Version
-Status
-Einstiegspunkt
-PHP-Version
-benötigte PHP-Erweiterungen
-Code-Struktur
-Nutzdaten
-AppConfig
-AppData
-Installation
-Update
-Migrationen
-bekannte Einschränkungen
-```
-
-<br>
-
-Empfohlener Anfang:
-
-<br>
-
-```markdown
-# Hello World 1.1.0
-
-```text
-App-ID:         hello-world
-Version:        1.1.0
-Status:         stable
-Einstiegspunkt: app/index.php
-PHP:            >= 8.2
-```
-```
-
-<br>
-
----
-
-<br>
-
-## 14. Migrationen
-
-<br>
-
-App-spezifische Migrationen liegen innerhalb der betreffenden Version:
-
-<br>
-
-```text
-migrations/
-├── config/
-└── data/
-```
-
-<br>
-
-Beispiel:
-
-<br>
-
-```text
-migrations/
-├── config/
-│   └── from-1.0.0.php
-└── data/
-    └── from-1.0.0.php
-```
-
-<br>
-
-Regeln:
-
-<br>
-
-- Konfigurationsmigrationen verändern nur AppConfig;
-- Datenmigrationen verändern nur AppData;
-- produktive Daten werden vor Migrationen gesichert;
-- Migrationen dürfen keine andere App oder Instanz verändern;
-- Fehler müssen einen Rollback auslösen;
-- erforderliche Migrationsreihenfolgen werden in der Versions-README dokumentiert.
-
-<br>
-
----
-
-<br>
-
-## 15. Health-Check
-
-<br>
-
-Optional:
-
-<br>
-
-```text
-health/check.php
-```
-
-<br>
-
-Der Health-Check prüft die lauffähige App-Version nach Installation oder Update.
-
-<br>
-
-Er darf prüfen:
-
-<br>
-
-- Einstiegspunkt vorhanden;
-- benötigte PHP-Erweiterungen vorhanden;
-- AppConfig gültig;
-- AppData-Verzeichnis vorhanden;
-- erforderliche AppData-Dateien vorhanden;
-- AppData beschreibbar;
-- grundlegende App-Funktion erreichbar.
-
-<br>
-
-Ein fehlgeschlagener Health-Check verhindert die Aktivierung der neuen Version.
-
-<br>
-
----
-
-<br>
-
-## 16. Veröffentlichung einer neuen App
+## 13. Neue App veröffentlichen
 
 <br>
 
@@ -900,17 +814,15 @@ Ein fehlgeschlagener Health-Check verhindert die Aktivierung der neuen Version.
 2. `apps/<app-id>/` anlegen.
 3. `app.json` anlegen.
 4. `versions/1.0.0/` anlegen.
-5. vollständigen App-Code unter `app/` ablegen.
-6. statische Nutzdaten unter `app-assets/` ablegen.
-7. AppConfig-Struktur unter `app-config/` ablegen.
-8. AppData-Struktur unter `app-data/` ablegen.
-9. Versions-README und Lizenz ergänzen.
-10. optional Migrationen und Health-Check ergänzen.
-11. `1.0.0` in `app.json` eintragen.
-12. `latest` in `app.json` auf `1.0.0` setzen.
-13. App in `catalog.json` eintragen.
-14. Validierung und Tests ausführen.
-15. committen und veröffentlichen.
+5. App-Code unter `app/` ablegen.
+6. Icon und weitere Ressourcen unter `assets/` ablegen.
+7. `<app-id>-config.json` unter `config/` anlegen.
+8. initiale Datenstruktur unter `data/` anlegen.
+9. Version `1.0.0` in `app.json` eintragen.
+10. `latest` in `app.json` auf `1.0.0` setzen.
+11. App in `catalog.json` eintragen.
+12. Struktur, JSON und PHP-Dateien prüfen.
+13. committen und veröffentlichen.
 
 <br>
 
@@ -918,27 +830,24 @@ Ein fehlgeschlagener Health-Check verhindert die Aktivierung der neuen Version.
 
 <br>
 
-## 17. Veröffentlichung einer neuen Version
+## 14. Neue Version veröffentlichen
 
 <br>
 
 1. neue Semantic-Version festlegen;
 2. neuen Versionsordner anlegen;
-3. vollständigen Code der neuen Version unter `app/` ablegen;
-4. vollständige statische Nutzdaten unter `app-assets/` ablegen;
-5. aktuelle AppConfig-Standards und Schema unter `app-config/` ablegen;
-6. aktuelle AppData-Struktur und Startdaten unter `app-data/` ablegen;
-7. Migrationen von unterstützten Vorgängerversionen ergänzen;
-8. Health-Check ergänzen oder aktualisieren;
-9. Versions-README aktualisieren;
-10. neue Version in `app.json` eintragen;
-11. `latest` in `app.json` aktualisieren;
-12. Tests ausführen;
-13. committen und veröffentlichen.
+3. vollständigen App-Code unter `app/` ablegen;
+4. vollständige Ressourcen unter `assets/` ablegen;
+5. aktuelle AppConfig-Vorlage unter `config/<app-id>-config.json` ablegen;
+6. aktuelle AppData-Ausgangsstruktur unter `data/` ablegen;
+7. neue Version in `app.json` eintragen;
+8. `latest` bei einer stabilen Veröffentlichung aktualisieren;
+9. Tests ausführen;
+10. committen und veröffentlichen.
 
 <br>
 
-Vorherige Versionsordner werden dabei nicht verändert.
+Vorherige Versionsordner werden nicht geändert oder gelöscht.
 
 <br>
 
@@ -946,7 +855,7 @@ Vorherige Versionsordner werden dabei nicht verändert.
 
 <br>
 
-## 18. Updateablauf
+## 15. Updateablauf
 
 <br>
 
@@ -958,14 +867,14 @@ Eine Verwaltungsplattform aktualisiert eine App nach folgendem Ablauf:
 2. zugehörige `app.json` laden;
 3. installierte Version mit `latest` vergleichen;
 4. neuen Versionsordner separat herunterladen;
-5. Struktur prüfen;
-6. AppConfig sichern;
-7. AppData sichern;
-8. Konfigurationsmigrationen ausführen;
-9. AppData-Migrationen ausführen;
-10. neuen App-Code aktivieren;
-11. Health-Check ausführen;
-12. bei Erfolg neue Version festschreiben;
+5. Pflichtverzeichnisse und JSON-Dateien prüfen;
+6. produktive AppConfig sichern;
+7. produktive AppData sichern;
+8. neuen App-Code bereitstellen;
+9. erforderliche neue Konfigurationsfelder ergänzen;
+10. erforderliche neue Datenstrukturen ergänzen;
+11. neue Version aktivieren;
+12. Funktion prüfen;
 13. bei Fehler App-Code, AppConfig und AppData zurückrollen.
 
 <br>
@@ -985,15 +894,11 @@ produktive AppData
 
 <br>
 
-Standardwerte aus `app-config/defaults.json` und `app-data/defaults/` gelten nur für neue Instanzen oder ausdrücklich dokumentierte Ergänzungen.
-
-<br>
-
 ---
 
 <br>
 
-## 19. Validierung
+## 16. Validierung
 
 <br>
 
@@ -1002,26 +907,25 @@ Vor Veröffentlichung wird mindestens geprüft:
 <br>
 
 ```text
-catalog.json gültig
-jede referenzierte app.json vorhanden
-App-ID eindeutig
+catalog.json ist gültiges JSON
+jede referenzierte app.json ist vorhanden
+jede App-ID ist eindeutig
 App-ID entspricht dem Verzeichnisnamen
-latest verweist auf vorhandene Version
-alle Versionspfade vorhanden
-Semantic Versioning gültig
-Pflichtverzeichnisse vorhanden
-Versions-README vorhanden
-Lizenz vorhanden
-Einstiegspunkt vorhanden
-PHP-Lint erfolgreich
-app-config/defaults.json gültig
-app-config/schema.json gültig
-app-data/defaults logisch lesbar
+latest verweist auf eine vorhandene stabile Version
+alle Versionspfade sind vorhanden
+Versionsnummern entsprechen MAJOR.MINOR.PATCH
+app/ ist vorhanden
+assets/ ist vorhanden
+config/ ist vorhanden
+data/ ist vorhanden
+app/index.php oder dokumentierter Einstiegspunkt ist vorhanden
+assets/icon.svg, icon.png oder icon.webp ist vorhanden
+config/<app-id>-config.json ist vorhanden
+config/<app-id>-config.json ist gültiges JSON
+PHP-Lint ist erfolgreich
 keine Pfadtraversierung
 keine produktiven Geheimnisse
 keine produktiven AppData
-Migrationen syntaktisch gültig
-Health-Check syntaktisch gültig
 ```
 
 <br>
@@ -1030,25 +934,25 @@ Health-Check syntaktisch gültig
 
 <br>
 
-## 20. Testanforderungen
+## 17. Testanforderungen
 
 <br>
 
 ```text
-Neuinstallation ohne vorhandene AppConfig
-Neuinstallation ohne vorhandene AppData
-Start mit Standard-AppConfig
-Start mit initialen AppData
+Neuinstallation aus einer Version
+Start des Einstiegspunkts
+Laden statischer Ressourcen
+Kopieren der AppConfig-Vorlage
+Kopieren der AppData-Ausgangsstruktur
 zweite unabhängige Instanz
-Update von jeder unterstützten Vorgängerversion
-AppConfig-Migration
-AppData-Migration
+Update auf die nächste Version
 Erhalt produktiver AppConfig
 Erhalt produktiver AppData
-Health-Check
-Rollback von App-Code
-Rollback von AppConfig
-Rollback von AppData
+Ergänzung neuer Konfigurationsfelder
+Ergänzung neuer Datenstrukturen
+Rollback des App-Codes
+Rollback der AppConfig
+Rollback der AppData
 ```
 
 <br>
@@ -1061,7 +965,7 @@ Eine Version gilt erst nach erfolgreichen Tests als veröffentlichbar.
 
 <br>
 
-## 21. Sicherheitsregeln
+## 18. Sicherheitsregeln
 
 <br>
 
@@ -1076,7 +980,7 @@ Eine Version gilt erst nach erfolgreichen Tests als veröffentlichbar.
 - HTML-Ausgaben escapen;
 - SQL-Abfragen vorbereiten;
 - TLS-Prüfungen nicht ohne dokumentierten Grund deaktivieren;
-- Startdaten dürfen keine realen Personen-, Kunden- oder Zugangsdaten enthalten.
+- Ausgangsdaten dürfen keine realen Personen-, Kunden- oder Zugangsdaten enthalten.
 
 <br>
 
@@ -1084,13 +988,14 @@ Eine Version gilt erst nach erfolgreichen Tests als veröffentlichbar.
 
 <br>
 
-## 22. Minimales Beispiel
+## 19. Minimales Beispiel
 
 <br>
 
 ```text
 webapp-foundry/
 ├── README.md
+├── LICENSE
 ├── catalog.json
 └── apps/
     └── hello-world/
@@ -1098,23 +1003,20 @@ webapp-foundry/
         └── versions/
             └── 1.0.0/
                 ├── app/
-                │   └── index.php
-                ├── app-assets/
-                │   └── icon.svg
-                ├── app-config/
-                │   ├── defaults.json
-                │   ├── schema.json
-                │   └── README.md
-                ├── app-data/
-                │   ├── defaults/
-                │   └── README.md
-                ├── README.md
-                └── LICENSE
+                │   ├── index.php
+                │   └── src/
+                ├── assets/
+                │   ├── icon.svg
+                │   └── resources/
+                ├── config/
+                │   └── hello-world-config.json
+                └── data/
+                    └── .gitkeep
 ```
 
 <br>
 
-`catalog.json`:
+### `catalog.json`
 
 <br>
 
@@ -1124,7 +1026,7 @@ webapp-foundry/
   "catalog": {
     "id": "webapp-foundry-main",
     "name": "WebApp Foundry",
-    "updatedAt": "2026-10-19T06:00:00Z"
+    "updatedAt": "2026-10-19T08:53:00Z"
   },
   "apps": [
     {
@@ -1137,7 +1039,7 @@ webapp-foundry/
 
 <br>
 
-`apps/hello-world/app.json`:
+### `apps/hello-world/app.json`
 
 <br>
 
@@ -1153,7 +1055,7 @@ webapp-foundry/
       "version": "1.0.0",
       "path": "versions/1.0.0",
       "status": "stable",
-      "releasedAt": "2026-10-19T06:00:00Z"
+      "releasedAt": "2026-10-19T08:53:00Z"
     }
   ]
 }
@@ -1161,7 +1063,7 @@ webapp-foundry/
 
 <br>
 
-`apps/hello-world/versions/1.0.0/app/index.php`:
+### `apps/hello-world/versions/1.0.0/app/index.php`
 
 <br>
 
@@ -1184,19 +1086,45 @@ declare(strict_types=1);
 
 <br>
 
-`apps/hello-world/versions/1.0.0/app-config/defaults.json`:
+### `apps/hello-world/versions/1.0.0/config/hello-world-config.json`
 
 <br>
 
 ```json
 {
-  "title": "Hello World"
+  "title": "Hello World",
+  "refreshSeconds": 0
 }
 ```
 
 <br>
 
-`apps/hello-world/versions/1.0.0/app-data/defaults/.gitkeep` sorgt dafür, dass der leere Startdatenordner im Repository erhalten bleibt.
+---
+
+<br>
+
+## 20. Repository-Regeln
+
+<br>
+
+1. Im Repository-Stamm liegen `README.md`, `LICENSE`, `catalog.json` und `apps/`.
+2. `catalog.json` listet alle Apps und verweist auf deren `app.json`.
+3. Im App-Ordner ist `app.json` die einzige Datei.
+4. Neben `app.json` ist im App-Ordner ausschließlich `versions/` erlaubt.
+5. `app.json` listet alle veröffentlichten Versionen der App.
+6. Jede Version besitzt einen vollständigen und unabhängigen Versionsordner.
+7. Jede Version enthält `app/`, `assets/`, `config/` und `data/`.
+8. App-Code gehört nach `app/`.
+9. Unveränderliche Ressourcen gehören nach `assets/`.
+10. Die AppConfig-Vorlage liegt unter `config/<app-id>-config.json`.
+11. Die AppData-Ausgangsstruktur liegt unter `data/`.
+12. Produktive AppConfig gehört nicht in dieses Repository.
+13. Produktive AppData gehört nicht in dieses Repository.
+14. Geheimnisse werden nicht committed.
+15. Veröffentlichte Versionsordner werden nicht nachträglich verändert.
+16. Änderungen erzeugen eine neue Version und einen neuen Eintrag in `app.json`.
+17. `latest` verweist immer auf eine vorhandene stabile Version.
+18. Alte Versionen bleiben für Rollback und Nachvollziehbarkeit erhalten.
 
 <br>
 
@@ -1204,35 +1132,7 @@ declare(strict_types=1);
 
 <br>
 
-## 23. Repository-Regeln
-
-<br>
-
-1. `catalog.json` listet alle Apps und verweist auf deren `app.json`.
-2. Im App-Ordner ist `app.json` die einzige Datei.
-3. Neben `app.json` ist im App-Ordner nur `versions/` erlaubt.
-4. `app.json` listet alle verfügbaren Versionen der App.
-5. Jede Version besitzt einen vollständigen, eigenständigen Versionsordner.
-6. Jede Version trennt `app/`, `app-assets/`, `app-config/` und `app-data/`.
-7. App-Code gehört ausschließlich nach `app/`.
-8. Unveränderliche Nutzdaten und Ressourcen gehören nach `app-assets/`.
-9. AppConfig-Standards und Schema gehören nach `app-config/`.
-10. AppData-Struktur und initiale Startdaten gehören nach `app-data/`.
-11. Produktive AppConfig gehört nicht in dieses Repository.
-12. Produktive AppData gehört nicht in dieses Repository.
-13. Geheimnisse werden nicht committed.
-14. Veröffentlichte Versionsordner werden nicht nachträglich verändert.
-15. Änderungen erzeugen einen neuen Versionsordner und einen neuen Eintrag in `app.json`.
-16. `latest` in `app.json` verweist immer auf eine vorhandene stabile Version.
-17. Alte Versionen bleiben für Rollback und Nachvollziehbarkeit erhalten.
-
-<br>
-
----
-
-<br>
-
-## 24. Abnahmekriterien
+## 21. Abnahmekriterien
 
 <br>
 
@@ -1245,12 +1145,14 @@ Das Repository ist verwendbar, wenn:
 - jede `app.json` alle vorhandenen Versionen korrekt listet;
 - `latest` auf eine vorhandene stabile Version verweist;
 - jeder Versionsordner vollständig ist;
-- App-Code, Nutzdaten, AppConfig und AppData logisch getrennt sind;
-- Einstiegspunkte dokumentiert und vorhanden sind;
-- AppConfig-Standardwerte und Schema gültig sind;
-- AppData-Startdaten keine produktiven Daten enthalten;
-- produktive Konfigurationen und AppData fehlen;
+- App-Code, Assets, AppConfig-Vorlage und AppData-Ausgangsstruktur getrennt sind;
+- der Einstiegspunkt vorhanden ist;
+- die AppConfig-Datei dem Schema `<app-id>-config.json` folgt;
+- die AppConfig-Datei gültiges JSON enthält;
+- `data/` ausschließlich nicht produktive Ausgangsdaten enthält;
+- keine produktiven Konfigurationen enthalten sind;
+- keine produktiven AppData enthalten sind;
 - keine Geheimnisse enthalten sind;
 - PHP-Dateien syntaktisch gültig sind;
 - Updates vorhandene AppConfig und AppData erhalten;
-- Rollbacks auf vorherige Versionen möglich sind.
+- Rollbacks auf frühere Versionen möglich sind.
