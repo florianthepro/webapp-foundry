@@ -71,36 +71,22 @@ webapp-foundry/
     │       ├── 1.0.0/
     │       │   ├── app/
     │       │   │   ├── index.php
-    │       │   │   ├── src/
-    │       │   │   ├── templates/
-    │       │   │   └── public/
-    │       │   │       └── assets/
-    │       │   ├── app-assets/
+    │       │   │   └── src/
+    │       │   ├── assets/
     │       │   │   ├── icon.svg
-    │       │   │   ├── screenshots/
     │       │   │   └── resources/
-    │       │   ├── app-config/
+    │       │   ├── config/
     │       │   │   ├── defaults.json
     │       │   │   ├── schema.json
     │       │   │   └── README.md
-    │       │   ├── app-data/
+    │       │   ├── data/
     │       │   │   ├── defaults/
     │       │   │   ├── schema.json
     │       │   │   └── README.md
-    │       │   ├── migrations/
-    │       │   ├── health/
-    │       │   │   └── check.php
     │       │   ├── README.md
     │       │   └── LICENSE
     │       └── 1.1.0/
-    │           ├── app/
-    │           ├── app-assets/
-    │           ├── app-config/
-    │           ├── app-data/
-    │           ├── migrations/
-    │           ├── health/
-    │           ├── README.md
-    │           └── LICENSE
+    │           ├── .../
     └── weitere-app/
         ├── app.json
         └── versions/
