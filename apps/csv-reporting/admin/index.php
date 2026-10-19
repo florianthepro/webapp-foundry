@@ -14,8 +14,8 @@ $csvreporting_title=(string)($csvreporting_settings['csvreporting_title']??'CSV-
 $csvreporting_heading=(string)($csvreporting_settings['csvreporting_heading']??'CSV-REPORTING by Florian');
 $csvreporting_editortitle=(string)($csvreporting_settings['csvreporting_editortitle']??'Rules Editor');
 $csvreporting_editorheading=$csvreporting_editortitle;
-$csvreporting_icon='https://raw.githubusercontent.com/florianthepro/webapp-foundry/main/apps/csv-reporting/app/index.svg';
-$csvreporting_editoricon='https://raw.githubusercontent.com/florianthepro/webapp-foundry/main/apps/csv-reporting/app/edit.svg';
+$csvreporting_icon='https://raw.githubusercontent.com/florianthepro/webapp-foundry/main/apps/csv-reporting/index.svg';
+$csvreporting_editoricon='https://raw.githubusercontent.com/florianthepro/webapp-foundry/main/apps/csv-reporting/edit.svg';
 ///////////////////////
 $csvreporting_theme='auto'; #'light' (fix hell) | 'dark' (fix dunkel) | 'auto' (dynamisch, folgt System)
 
